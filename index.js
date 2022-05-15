@@ -1,21 +1,29 @@
 const {user, password} = require("./.env");
 require("dotenv").config();
 const inquirer = require("inquirer");
-const db = require("./db");
+const mysql = require("mysql");
+const cTable = require("console.table");
+const db = require(".");
+
+// Data variables
+const queryDepartments = "SELECT * FROM department";
+const queryRoles = "SELECT * FROM role";
+const queryEmployees = "SELECT * FROM employee";
+
 
 // Use .env
 const connection = mysql.createConnection(
     {
         host: "localhost",
-        user: process.env.USER,
+        user:  process.env.USER,
         password: process.env.PASSWORD,
-        database: "employee_db"
+        database: "employees"
     },
     console.log("Connected to the employees database")
 )
 
 // Prompt the questions
-const FirstQuestions= () => {
+const firstQuestions= () => {
     inquirer
     .prompt({
       name: "menuOptions",
@@ -60,4 +68,36 @@ const FirstQuestions= () => {
       });
   }
 
-FirstQuestions();
+
+firstQuestions();
+
+
+// View departments
+const viewDepartments = () => {
+    connection.query(queryDepartments, function(err, rows) {
+      if (err) throw err;
+      console.table(rows);
+      firstQuestions();
+    });
+}
+
+// View Roles
+const viewRoles = () => {
+    connection.query(queryRoles, function(err, rows) {
+      if (err) throw err;
+      console.table(rows);
+      firstQuestions();
+    });
+}
+
+// View Employees
+const viewEmployees = () => {
+    connection.query(queryEmployees, function(err, rows) {
+      if (err) throw err;
+      console.table(rows);
+      firstQuestions();
+    });
+}
+
+
+
