@@ -11,6 +11,7 @@ const queryRoles = "SELECT * FROM role";
 const queryEmployees = "SELECT * FROM employee";
 
 
+
 // Use .env
 const connection = mysql.createConnection(
     {
@@ -20,7 +21,7 @@ const connection = mysql.createConnection(
         database: "employees"
     },
     console.log("Connected to the employees database")
-)
+);
 
 // Prompt the questions
 const firstQuestions= () => {
@@ -64,9 +65,9 @@ const firstQuestions= () => {
             break;
           default:
             exit();
-        }
+        };
       });
-  }
+};
 
 
 firstQuestions();
@@ -79,7 +80,7 @@ const viewDepartments = () => {
       console.table(rows);
       firstQuestions();
     });
-}
+};
 
 // View Roles
 const viewRoles = () => {
@@ -88,7 +89,7 @@ const viewRoles = () => {
       console.table(rows);
       firstQuestions();
     });
-}
+};
 
 // View Employees
 const viewEmployees = () => {
@@ -97,7 +98,85 @@ const viewEmployees = () => {
       console.table(rows);
       firstQuestions();
     });
-}
+};
 
 
+// Add a department
+const addDepartment = () => {
+    inquirer
+    .prompt([{
+        type: "input",
+        name: "department",
+        message: "Please enter the name of department you would like to add"
+    }, ])
+    .then(function(data) {
+        connection.query('INSERT INTO department (department_name) VALUES (?)', [data.department], function(err, rows) {
+            if (err) throw err;
+            console.log("The department has beed added!");
+           firstQuestions();
+        });
+    });
+};
 
+//Add a role
+const addRole = () => {
+    inquirer
+    .prompt([
+        {
+            message: "Please enter the title of the role:",
+            type: "input",
+            name: "title"
+        }, {
+            message: "Please enter the salary of the role:",
+            type: "number",
+            name: "salary"
+        }, {
+            message: "Please enter the departement ID:",
+            type: "number",
+            name: "department_id"
+        }
+    ]).then(function (data) {
+        connection.query("INSERT INTO role (title, salary, department_id) values (?, ?, ?)", [data.title, data.salary, data.department_id], 
+        function (err, rows) {
+            if (err) throw err;
+            console.log("The role has been added!");
+            firstQuestions();
+        });
+    });
+};
+
+// Add an employee
+const addEmployee =  () => {
+    inquirer
+    .prompt([
+        {
+          type: "input",
+          message: "Please enter the first name of the employee:",
+          name: "First_name"
+        },
+        {
+          type: "input",
+          message: "Please enter the last name of the employee:",
+          name: "Last_name"
+        },
+        {
+          type: "input",
+          message: "Please enter the role ID of the employee:",
+          name: "Role_ID"
+        },
+        {
+          type: "input",
+          message: "Please enter the manager ID of the employee:",
+          name: "Manager_ID"
+        }
+      ])
+      .then(function(data) {
+        connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)", 
+        [data.First_name, data.Last_name, data.Role_ID, data.Manager_ID], 
+        function(err, rows) {
+          if (err) throw err;
+          console.log("The employee has been added!");
+          firstQuestions();
+        });
+      });
+};
