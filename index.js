@@ -1,16 +1,14 @@
 const {user, password} = require("./.env");
 require("dotenv").config();
 const inquirer = require("inquirer");
-const mysql = require("mysql");
-const cTable = require("console.table");
+const mysql = require("mysql2");
+const clTable = require("console.table");
 const db = require(".");
 
 // Data variables
 const queryDepartments = "SELECT * FROM department";
 const queryRoles = "SELECT * FROM role";
 const queryEmployees = "SELECT * FROM employee";
-
-
 
 // Use .env
 const connection = mysql.createConnection(
@@ -63,15 +61,11 @@ const firstQuestions= () => {
           case "Update an employee role":
             updateEmployee();
             break;
-          default:
-            exit();
         };
       });
 };
 
-
 firstQuestions();
-
 
 // View departments
 const viewDepartments = () => {
@@ -176,6 +170,32 @@ const addEmployee =  () => {
         function(err, rows) {
           if (err) throw err;
           console.log("The employee has been added!");
+          firstQuestions();
+        });
+      });
+};
+
+//Update employee
+const updateEmployee = () => {
+    inquirer
+    .prompt([
+        {
+          type: "input",
+          message: "Please enter the employee you would like to update:",
+          name: "Update_employee"
+        },
+  
+        {
+          type: "input",
+          message: "Please enter the role you would like to update:",
+          name: "Update_role"
+        }
+      ])
+      .then(function(data) {
+        connection.query('UPDATE employee SET role_id= ? WHERE first_name= ?',
+        [data.Update_role, data.Update_employee],function(err, rows) {
+          if (err) throw err;
+          console.log("The employee's information has been updated!")
           firstQuestions();
         });
       });
